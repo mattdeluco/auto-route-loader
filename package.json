@@ -1,0 +1,15 @@
+{
+  "name": "route-loader",
+  "version": "1.0.0",
+  "description": "Automatically traverse an Express project and load routes.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "express",
+    "route"
+  ],
+  "author": "Matt DeLuco <matt@deluco.net>",
+  "license": "ISC"
+}
