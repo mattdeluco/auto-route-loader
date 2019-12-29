@@ -4,12 +4,26 @@
   "description": "Automatically traverse an Express project and load routes.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint --debug index.js",
+    "test": "./node_modules/.bin/mocha --reporter spec"
   },
   "keywords": [
     "express",
     "route"
   ],
   "author": "Matt DeLuco <matt@deluco.net>",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^6.7.2",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.19.1",
+    "express-list-endpoints": "^4.0.1",
+    "mocha": "^6.2.2",
+    "mock-fs": "^4.10.4",
+    "mock-require": "^3.0.3",
+    "sinon": "^8.0.1"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
