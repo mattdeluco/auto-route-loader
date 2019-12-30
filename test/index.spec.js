@@ -1,4 +1,5 @@
-const assert = require('assert'),
+const _ = require('lodash'),
+  assert = require('assert'),
   listEndpoints = require('express-list-endpoints'),
   mockRequire = require('mock-require'),
   mockFS = require('mock-fs'),
@@ -17,7 +18,8 @@ describe('Test Suite', () => {
 
   let routes_loaded = {
     auth: false,
-    account: false
+    account: false,
+    bar: false
   };
 
   before(() => {
@@ -28,6 +30,11 @@ describe('Test Suite', () => {
 
     mockRequire('root/account/routes.js', (router, opts) => {
       routes_loaded.account = true;
+      router.get('', () => {});
+    });
+
+    mockRequire('root/bar/api.js', (router, opts) => {
+      routes_loaded.bar = true;
       router.get('', () => {});
     });
 
@@ -42,7 +49,8 @@ describe('Test Suite', () => {
         foo: {},
         bar: {
           baz: '',
-          quux: ''
+          quux: '',
+          'api.js': ''
         }
       }
     });
@@ -89,5 +97,35 @@ describe('Test Suite', () => {
 
     let endpoints = listEndpoints(router);
     assert(endpoints[0].path === '/auth');
+  });
+
+  it('should load all whitelisted routes', () => {
+    let loader = routeLoader(routerFactoryFn, { directoryWhiteList: ['auth', 'account'] });
+    let router = routerFactoryFn();
+    loader.loadRoutes('root', router);
+    let endpoints = listEndpoints(router);
+    let paths = endpoints.map(ep => ep.path.substr(1));
+
+    assert(_.difference(paths, Object.keys(routes_loaded)).length === 0);
+    assert(routes_loaded.auth);
+    assert(routes_loaded.account);
+    assert(!routes_loaded.bar);
+  });
+
+  it('should load routes from files with matching pattern', () => {
+    let loader = routeLoader(routerFactoryFn, {
+      directoryWhiteList: ['auth', 'account', 'bar'],
+      routesFileNameRegEx: /api\.js/
+    });
+    let router = routerFactoryFn();
+    loader.loadRoutes('root', router);
+    
+    let endpoints = listEndpoints(router);
+    let paths = endpoints.map(ep => ep.path.substr(1));
+
+    assert(_.difference(paths, Object.keys(routes_loaded)).length === 0);
+    assert(routes_loaded.bar);
+    assert(!routes_loaded.auth);
+    assert(!routes_loaded.account);
   });
 });
