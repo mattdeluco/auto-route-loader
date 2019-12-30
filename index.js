@@ -1,10 +1,10 @@
 const fs = require('fs');
 
-const requiredParameter = (message) => {
+const requiredParameter = message => {
   throw new Error(message);
 };
 
-function loader(routerFactoryFn, options = {}) {
+module.exports = function(routerFactoryFn, options = {}) {
   const routerFactory = routerFactoryFn || requiredParameter('Must provide router factory');
   const directoryWhiteList = options.directoryWhiteList || [];
   const re = options.routesFileNameRegEx || /routes\.js/;
@@ -13,16 +13,16 @@ function loader(routerFactoryFn, options = {}) {
   const loadRoutes = function(rootPath, router) {
     router = router || requiredParameter('Must provide router');
     let hasRoutes = false;
-    fs.readdirSync(rootPath).forEach(f => {
-      let newPath = `${rootPath}/${f}`;
+    fs.readdirSync(rootPath).forEach(filename => {
+      let newPath = `${rootPath}/${filename}`;
       let fstat = fs.statSync(newPath);
-      if (fstat.isDirectory() && directoryWhiteList.includes(f)) {
+      if (fstat.isDirectory() && directoryWhiteList.includes(filename)) {
         let subRouter = routerFactory();
         if (loadRoutes(newPath, subRouter)) {
-          router.use(`/${f}`, subRouter);
+          router.use(`/${filename}`, subRouter);
           hasRoutes = true;
         }
-      } else if (fstat.isFile() && re.test(f)) {
+      } else if (fstat.isFile() && re.test(filename)) {
         require(newPath)(router, routeOptions);
         hasRoutes = true;
       }
@@ -33,6 +33,4 @@ function loader(routerFactoryFn, options = {}) {
   return {
     loadRoutes: loadRoutes
   };
-}
-
-module.exports = loader;
+};
