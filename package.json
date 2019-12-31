@@ -13,6 +13,7 @@
   ],
   "author": "Matt DeLuco <matt@deluco.net>",
   "license": "ISC",
+  "repository": "github:mattdeluco/auto-route-loader",
   "devDependencies": {
     "eslint": "^6.7.2",
     "eslint-config-airbnb-base": "^14.0.0",
