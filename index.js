@@ -8,7 +8,7 @@ module.exports = function(routerFactoryFn, options = {}) {
   const routerFactory = routerFactoryFn || requiredParameter('Must provide router factory');
   const directoryWhiteList = options.directoryWhiteList || [];
   const re = options.routesFileNameRegEx || /routes\.js/;
-  const routeOptions = options.routeOptions || {};
+  const routerOptions = options.routerOptions || {};
 
   const loadRoutes = function(rootPath, router) {
     router = router || requiredParameter('Must provide router');
@@ -23,7 +23,7 @@ module.exports = function(routerFactoryFn, options = {}) {
           hasRoutes = true;
         }
       } else if (fstat.isFile() && re.test(filename)) {
-        require(newPath)(router, routeOptions);
+        require(newPath)(router, routerOptions);
         hasRoutes = true;
       }
     });
