@@ -25,13 +25,13 @@ module.exports = function (router, opts = {}) {
   const db = opts.db;
 
   router.post(
-        '/authenticate',
-        (req, res) => { ... }
+    '/authenticate',
+    (req, res) => { ... }
   );
 
   router.get(
-        '/logout',
-        (req, res) => { ... }
+    '/logout',
+    (req, res) => { ... }
   );
 }
 ```
@@ -47,11 +47,11 @@ const express = require('express'),
   routeLoader = require('route-loader');
 
 const routerFactoryFn = () =>
-    express.Router({
-      strict: true,
-      mergeParams: true,
-      caseSensitive: false
-    });
+  express.Router({
+    strict: true,
+    mergeParams: true,
+    caseSensitive: false
+  });
 
 const app = express();
 const db = pgp(...);
@@ -88,7 +88,7 @@ loader object with one function `loadRoutes()`.
 `routerLoader(routerFactoryFn, options)`
 
 - routerFactoryFn: **required** a router factory function (see
-[Router Factory](#router-factory) below)
+  [Router Factory](#router-factory) below)
 - options: **optional** an options object
   - directoryWhiteList: a list of directory basenames from
     which loading route files is permissible, empty by default
@@ -102,11 +102,11 @@ loader object with one function `loadRoutes()`.
 `loader.loadRoutes(<root path>, <root router>)`
 
 - root path: the path from which to recursively descend and load
-route files. If loading routes from `app.js` in the project's
-root directory, use [__dirname](https://nodejs.org/docs/latest/api/globals.html#globals_dirname)
+  route files. If loading routes from `app.js` in the project's
+  root directory, use [\_\_dirname](https://nodejs.org/docs/latest/api/globals.html#globals_dirname)
 - root router: the router to which all descendant routers attach,
-typically created with the previously defined
-[routerFactoryFn](#router-factory)
+  typically created with the previously defined
+  [routerFactoryFn](#router-factory)
 
 ## Router Factory
 
@@ -119,11 +119,11 @@ const express = require('express')
   routeLoader = require('route-loader');
 
 const routerFactoryFn = () =>
-    express.Router({
-      strict: true,
-      mergeParams: true,
-      caseSensitive: false
-    });
+  express.Router({
+    strict: true,
+    mergeParams: true,
+    caseSensitive: false
+  });
 
 const loader = routeLoader(routerFactoryFn);
 ```
