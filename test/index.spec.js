@@ -1,12 +1,13 @@
-const _ = require('lodash'),
-  assert = require('assert'),
-  listEndpoints = require('express-list-endpoints'),
-  mockRequire = require('mock-require'),
-  mockFS = require('mock-fs'),
-  routeLoader = require('../index.js'),
-  { Router } = require('express');
+/* eslint no-unused-vars: ["error", { "argsIgnorePattern": "^_" }] */
 
+const _ = require('lodash');
+const assert = require('assert');
+const listEndpoints = require('express-list-endpoints');
 const { after, before, beforeEach, describe, it } = require('mocha');
+const mockRequire = require('mock-require');
+const mockFS = require('mock-fs');
+const { Router } = require('express');
+const routeLoader = require('../index.js');
 
 describe('Test Suite', () => {
   const routerFactoryFn = () =>
@@ -16,25 +17,25 @@ describe('Test Suite', () => {
       caseSensitive: false
     });
 
-  let routes_loaded = {
+  const routesLoaded = {
     auth: false,
     account: false,
     bar: false
   };
 
   before(() => {
-    mockRequire('root/auth/routes.js', (router, opts) => {
-      routes_loaded.auth = true;
+    mockRequire('root/auth/routes.js', (router, _opts) => {
+      routesLoaded.auth = true;
       router.get('', () => {});
     });
 
-    mockRequire('root/account/routes.js', (router, opts) => {
-      routes_loaded.account = true;
+    mockRequire('root/account/routes.js', (router, _opts) => {
+      routesLoaded.account = true;
       router.get('', () => {});
     });
 
-    mockRequire('root/bar/api.js', (router, opts) => {
-      routes_loaded.bar = true;
+    mockRequire('root/bar/api.js', (router, _opts) => {
+      routesLoaded.bar = true;
       router.get('', () => {});
     });
 
@@ -62,8 +63,8 @@ describe('Test Suite', () => {
   });
 
   beforeEach(() => {
-    Object.keys(routes_loaded).forEach(r => {
-      routes_loaded[r] = false;
+    Object.keys(routesLoaded).forEach(r => {
+      routesLoaded[r] = false;
     });
   });
 
@@ -75,7 +76,7 @@ describe('Test Suite', () => {
   });
 
   it('requires a router parameter', () => {
-    let loader = routeLoader(routerFactoryFn);
+    const loader = routeLoader(routerFactoryFn);
     assert.throws(() => loader.loadRoutes(''), {
       name: 'Error',
       message: 'Must provide router'
@@ -83,49 +84,49 @@ describe('Test Suite', () => {
   });
 
   it('should not load any routes', () => {
-    let loader = routeLoader(routerFactoryFn);
+    const loader = routeLoader(routerFactoryFn);
     loader.loadRoutes('root', routerFactoryFn());
-    assert(Object.values(routes_loaded).every(v => !v));
+    assert(Object.values(routesLoaded).every(v => !v));
   });
 
   it('should load only the auth route', () => {
-    let loader = routeLoader(routerFactoryFn, { directoryWhiteList: ['auth'] });
-    let router = routerFactoryFn();
+    const loader = routeLoader(routerFactoryFn, { directoryWhiteList: ['auth'] });
+    const router = routerFactoryFn();
     loader.loadRoutes('root', router);
-    assert(routes_loaded.auth);
-    assert(!routes_loaded.account);
+    assert(routesLoaded.auth);
+    assert(!routesLoaded.account);
 
-    let endpoints = listEndpoints(router);
+    const endpoints = listEndpoints(router);
     assert(endpoints[0].path === '/auth');
   });
 
   it('should load all whitelisted routes', () => {
-    let loader = routeLoader(routerFactoryFn, { directoryWhiteList: ['auth', 'account'] });
-    let router = routerFactoryFn();
+    const loader = routeLoader(routerFactoryFn, { directoryWhiteList: ['auth', 'account'] });
+    const router = routerFactoryFn();
     loader.loadRoutes('root', router);
-    let endpoints = listEndpoints(router);
-    let paths = endpoints.map(ep => ep.path.substr(1));
+    const endpoints = listEndpoints(router);
+    const paths = endpoints.map(ep => ep.path.substr(1));
 
-    assert(_.difference(paths, Object.keys(routes_loaded)).length === 0);
-    assert(routes_loaded.auth);
-    assert(routes_loaded.account);
-    assert(!routes_loaded.bar);
+    assert(_.difference(paths, Object.keys(routesLoaded)).length === 0);
+    assert(routesLoaded.auth);
+    assert(routesLoaded.account);
+    assert(!routesLoaded.bar);
   });
 
   it('should load routes from files with matching pattern', () => {
-    let loader = routeLoader(routerFactoryFn, {
+    const loader = routeLoader(routerFactoryFn, {
       directoryWhiteList: ['auth', 'account', 'bar'],
       routesFileNameRegEx: /api\.js/
     });
-    let router = routerFactoryFn();
+    const router = routerFactoryFn();
     loader.loadRoutes('root', router);
-    
-    let endpoints = listEndpoints(router);
-    let paths = endpoints.map(ep => ep.path.substr(1));
 
-    assert(_.difference(paths, Object.keys(routes_loaded)).length === 0);
-    assert(routes_loaded.bar);
-    assert(!routes_loaded.auth);
-    assert(!routes_loaded.account);
+    const endpoints = listEndpoints(router);
+    const paths = endpoints.map(ep => ep.path.substr(1));
+
+    assert(_.difference(paths, Object.keys(routesLoaded)).length === 0);
+    assert(routesLoaded.bar);
+    assert(!routesLoaded.auth);
+    assert(!routesLoaded.account);
   });
 });

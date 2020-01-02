@@ -4,25 +4,26 @@ const requiredParameter = message => {
   throw new Error(message);
 };
 
-module.exports = function(routerFactoryFn, options = {}) {
+module.exports = (routerFactoryFn, options = {}) => {
   const routerFactory = routerFactoryFn || requiredParameter('Must provide router factory');
   const directoryWhiteList = options.directoryWhiteList || [];
   const re = options.routesFileNameRegEx || /routes\.js/;
   const routerOptions = options.routerOptions || {};
 
-  const loadRoutes = function(rootPath, router) {
-    router = router || requiredParameter('Must provide router');
+  const loadRoutes = (rootPath, rootRouter) => {
+    const router = rootRouter || requiredParameter('Must provide router');
     let hasRoutes = false;
     fs.readdirSync(rootPath).forEach(filename => {
-      let newPath = `${rootPath}/${filename}`;
-      let fstat = fs.statSync(newPath);
+      const newPath = `${rootPath}/${filename}`;
+      const fstat = fs.statSync(newPath);
       if (fstat.isDirectory() && directoryWhiteList.includes(filename)) {
-        let subRouter = routerFactory();
+        const subRouter = routerFactory();
         if (loadRoutes(newPath, subRouter)) {
           router.use(`/${filename}`, subRouter);
           hasRoutes = true;
         }
       } else if (fstat.isFile() && re.test(filename)) {
+        // eslint-disable-next-line global-require, import/no-dynamic-require
         require(newPath)(router, routerOptions);
         hasRoutes = true;
       }
@@ -31,6 +32,6 @@ module.exports = function(routerFactoryFn, options = {}) {
   };
 
   return {
-    loadRoutes: loadRoutes
+    loadRoutes
   };
 };
