@@ -85,7 +85,7 @@ Routes will be created at the following paths:
 Route Loader is configured with several options and returns a
 loader object with one function `loadRoutes()`.
 
-`routerLoader(routerFactoryFn, options)`
+`routeLoader(routerFactoryFn, options)`
 
 - routerFactoryFn: **required** a router factory function (see
   [Router Factory](#router-factory) below)
