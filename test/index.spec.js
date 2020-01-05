@@ -20,7 +20,8 @@ describe('Test Suite', () => {
   const routesLoaded = {
     auth: false,
     account: false,
-    bar: false
+    bar: false,
+    blackList: false
   };
 
   before(() => {
@@ -30,6 +31,11 @@ describe('Test Suite', () => {
     });
 
     mockRequire('root/account/routes.js', (router, _opts) => {
+      routesLoaded.account = true;
+      router.get('', () => {});
+    });
+
+    mockRequire('root/blackList/routes.js', (router, _opts) => {
       routesLoaded.account = true;
       router.get('', () => {});
     });
@@ -45,6 +51,9 @@ describe('Test Suite', () => {
           'routes.js': ''
         },
         account: {
+          'routes.js': ''
+        },
+        blackList: {
           'routes.js': ''
         },
         foo: {},
@@ -128,5 +137,19 @@ describe('Test Suite', () => {
     assert(routesLoaded.bar);
     assert(!routesLoaded.auth);
     assert(!routesLoaded.account);
+  });
+
+  it('should skip blacklisted directories', () => {
+    const loader = routeLoader(routerFactoryFn, {
+      directoryWhiteList: ['auth', 'blackList'],
+      directoryBlackList: ['blackList']
+    });
+    const router = routerFactoryFn();
+    loader.loadRoutes('root', router);
+
+    const endpoints = listEndpoints(router);
+    assert(endpoints.length === 1);
+    assert(routesLoaded.auth);
+    assert(!routesLoaded.blackList);
   });
 });

@@ -92,6 +92,8 @@ loader object with one function `loadRoutes()`.
 - options: **optional** an options object
   - directoryWhiteList: a list of directory basenames from
     which loading route files is permissible, empty by default
+  - directoryBlackList: a list of directory basenames to explicitly
+  skip traversal, **default** `['node_modules']`
   - re: a regular expression against which to match route filenames,
     default is `/routes\.js/`
   - routerOptions: an arbitrary object to be passed on to the route
