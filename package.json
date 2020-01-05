@@ -1,6 +1,6 @@
 {
   "name": "auto-route-loader",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Automatically traverse an Express project and load routes.",
   "main": "index.js",
   "scripts": {
