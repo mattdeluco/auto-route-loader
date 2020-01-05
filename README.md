@@ -39,6 +39,11 @@ module.exports = function (router, opts = {}) {
 The following is an example of how to load all the routes in
 that project.
 
+**WARNING**: If you decide to put your route configuration in a separate
+file in your project root, be certain that the filename you choose
+does not match your route file regular expression (e.g. `routes.js` by
+default). This would cause an infinte require loop.
+
 ```
 // project/app.js
 
@@ -93,7 +98,7 @@ loader object with one function `loadRoutes()`.
   - directoryWhiteList: a list of directory basenames from
     which loading route files is permissible, empty by default
   - directoryBlackList: a list of directory basenames to explicitly
-  skip traversal, **default** `['node_modules']`
+    skip traversal, **default** `['node_modules']`
   - re: a regular expression against which to match route filenames,
     default is `/routes\.js/`
   - routerOptions: an arbitrary object to be passed on to the route
