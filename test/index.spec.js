@@ -21,7 +21,8 @@ describe('Test Suite', () => {
     auth: false,
     account: false,
     bar: false,
-    blackList: false
+    blackList: false,
+    node_modules: false
   };
 
   before(() => {
@@ -45,6 +46,11 @@ describe('Test Suite', () => {
       router.get('', () => {});
     });
 
+    mockRequire('root/node_modules/routes.js', (router, _opts) => {
+      routesLoaded.node_modules = true;
+      router.get('', () => {});
+    });
+
     mockFS({
       root: {
         auth: {
@@ -61,6 +67,9 @@ describe('Test Suite', () => {
           baz: '',
           quux: '',
           'api.js': ''
+        },
+        node_modules: {
+          'routes.js': ''
         }
       }
     });
@@ -151,5 +160,17 @@ describe('Test Suite', () => {
     assert(endpoints.length === 1);
     assert(routesLoaded.auth);
     assert(!routesLoaded.blackList);
+  });
+
+  it('blacklists node_modules by default', () => {
+    const loader = routeLoader(routerFactoryFn, {
+      directoryWhiteList: ['node_modules']
+    });
+    const router = routerFactoryFn();
+    loader.loadRoutes('root', router);
+
+    const endpoints = listEndpoints(router);
+    assert(endpoints.length === 0);
+    assert(!routesLoaded.node_modules);
   });
 });
