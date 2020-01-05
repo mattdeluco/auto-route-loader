@@ -7,7 +7,6 @@ const requiredParameter = message => {
 module.exports = (routerFactoryFn, options = {}) => {
   const routerFactory = routerFactoryFn || requiredParameter('Must provide router factory');
   const directoryWhiteList = options.directoryWhiteList || [];
-  const directoryBlackList = options.directoryBlackList || ['node_modules'];
   const re = options.routesFileNameRegEx || /routes\.js/;
   const routerOptions = options.routerOptions || {};
 
@@ -17,11 +16,7 @@ module.exports = (routerFactoryFn, options = {}) => {
     fs.readdirSync(rootPath).forEach(filename => {
       const newPath = `${rootPath}/${filename}`;
       const fstat = fs.statSync(newPath);
-      if (
-        fstat.isDirectory() &&
-        directoryWhiteList.includes(filename) &&
-        !directoryBlackList.includes(filename)
-      ) {
+      if (fstat.isDirectory() && directoryWhiteList.includes(filename)) {
         const subRouter = routerFactory();
         if (loadRoutes(newPath, subRouter)) {
           router.use(`/${filename}`, subRouter);

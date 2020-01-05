@@ -20,9 +20,7 @@ describe('Test Suite', () => {
   const routesLoaded = {
     auth: false,
     account: false,
-    bar: false,
-    blackList: false,
-    node_modules: false
+    bar: false
   };
 
   before(() => {
@@ -36,18 +34,8 @@ describe('Test Suite', () => {
       router.get('', () => {});
     });
 
-    mockRequire('root/blackList/routes.js', (router, _opts) => {
-      routesLoaded.account = true;
-      router.get('', () => {});
-    });
-
     mockRequire('root/bar/api.js', (router, _opts) => {
       routesLoaded.bar = true;
-      router.get('', () => {});
-    });
-
-    mockRequire('root/node_modules/routes.js', (router, _opts) => {
-      routesLoaded.node_modules = true;
       router.get('', () => {});
     });
 
@@ -59,17 +47,11 @@ describe('Test Suite', () => {
         account: {
           'routes.js': ''
         },
-        blackList: {
-          'routes.js': ''
-        },
         foo: {},
         bar: {
           baz: '',
           quux: '',
           'api.js': ''
-        },
-        node_modules: {
-          'routes.js': ''
         }
       }
     });
@@ -146,31 +128,5 @@ describe('Test Suite', () => {
     assert(routesLoaded.bar);
     assert(!routesLoaded.auth);
     assert(!routesLoaded.account);
-  });
-
-  it('should skip blacklisted directories', () => {
-    const loader = routeLoader(routerFactoryFn, {
-      directoryWhiteList: ['auth', 'blackList'],
-      directoryBlackList: ['blackList']
-    });
-    const router = routerFactoryFn();
-    loader.loadRoutes('root', router);
-
-    const endpoints = listEndpoints(router);
-    assert(endpoints.length === 1);
-    assert(routesLoaded.auth);
-    assert(!routesLoaded.blackList);
-  });
-
-  it('blacklists node_modules by default', () => {
-    const loader = routeLoader(routerFactoryFn, {
-      directoryWhiteList: ['node_modules']
-    });
-    const router = routerFactoryFn();
-    loader.loadRoutes('root', router);
-
-    const endpoints = listEndpoints(router);
-    assert(endpoints.length === 0);
-    assert(!routesLoaded.node_modules);
   });
 });
